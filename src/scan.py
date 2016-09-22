@@ -1,7 +1,5 @@
 import os
 import math
-import six
-import random
 
 import rdns
 
@@ -69,7 +67,7 @@ def rdnsMenu():
 	logo()
 	netInterfaces = rdns.getNetInterfaces()
 	options = ["exit", "help", "back"]
-	print(colours.GREEN + "[*] " + colours.ENDC + "NETWORK INTERFACES")
+	print(colours.GREEN + "[*] " + colours.ENDC + "Network Interfaces")
 	for i in range(len(netInterfaces)):
 		print(colours.GREEN + "[" + str(i) + "] " + colours.BLUE + netInterfaces[i] + colours.ENDC)
 		options.append(str(i))
@@ -79,7 +77,34 @@ def rdnsMenu():
 	print(colours.GREEN + "\n[" + str(i+2) + "] " + colours.BLUE + "Previous Menu " + colours.DBLUE + "(or type 'back')\n\n" + colours.ENDC)
 	choice = HAWK(options)
 	if(str(0) <= choice <= str(i)):
-		rdns.getIp(netInterfaces[int(choice)])
+		results = rdns.getIp(netInterfaces[int(choice)])
+			
+		#results[0] is your device ip
+		#results[1] is the ip type
+		#results[2] is the max ip
+		#results[3] is the router ip
+		#netInterfaces[int(choice)] is the net int
+
+
+		print("\n" + colours.GREEN + "[*] " + colours.ENDC + "Reverse DNS Scan Results")
+		print("\n" + colours.GREEN + "[*] " + colours.ENDC + "IP: " + results[0] + colours.DBLUE + " (" + netInterfaces[int(choice)] + ")" + colours.ENDC)
+		SSID = results[3].split("#")
+		print("\n" + colours.GREEN + "[*] " + colours.BLUE + "SSID: " + "'" + SSID[1] + "'" + colours.ENDC)
+		print(colours.GREEN + "[*] " + colours.BLUE + "DNS: " + SSID[0] +  colours.ENDC)
+
+		for i in range (len(results)):
+			if(i > 2):
+				device = results[i].split("#")
+				print("\n" + colours.GREEN + "[" + str(i-3) + "] " + colours.BLUE + device[1])
+				print(colours.GREEN + "[" + str(i-3) + "] " + colours.BLUE + device[0] + colours.ENDC)
+				
+		input(colours.HAWK + "\nHAWK" + colours.ENDC + "> ")
+		scannersMenu()
+
+
+
+
+
 #	elif(choice == str(i+1)):
 #		print(colours.GREEN + "[?] " + colours.ENDC + "Please Enter IP or Domain")
 #		ipOrDomain = input(colours.HAWK + "HAWK" + colours.ENDC + "> ")
@@ -89,7 +114,7 @@ def rdnsMenu():
 #Scanners Menu(0) -------------------------------------------------------
 def scannersMenu():
 	logo()
-	print(colours.GREEN + "[*] " + colours.ENDC + "SCANNERS")
+	print(colours.GREEN + "[*] " + colours.ENDC + "Scanners")
 	print(colours.GREEN + "[0] " + colours.BLUE + "Port Scanner")
 	print(colours.GREEN + "[1] " + colours.BLUE + "Reverse Domain Name Scanner")
 	print(colours.GREEN + "[2] " + colours.BLUE + "Operating System Discovery")
@@ -112,7 +137,7 @@ def scannersMenu():
 def mainMenu():
 	logo()
 	print(colours.RED + "[!] DISCLAIMER: This program is only for testing or educational purposes and can only be used where strict consent has been given. Do not use this for malicious purposes.\n\n")
-	print(colours.GREEN + "[*] " + colours.ENDC + "MAIN MENU" + colours.DBLUE + " (interaction mode)")
+	print(colours.GREEN + "[*] " + colours.ENDC + "Main Menu" + colours.DBLUE + " (interaction mode)")
 	print(colours.GREEN + "[0] " + colours.BLUE + "Scanners\n\n")
 	options = ["0", "exit", "help"]
 	choice = HAWK(options)

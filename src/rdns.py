@@ -1,13 +1,8 @@
 import socket
 import subprocess
 import os
-
-
-#def getHost(ip):
-#	for i in range(257):
-#		IP_ADDRESS = ip + str(i)
-#		if IP_ADDRESS != socket.getfqdn(IP_ADDRESS):
-#			print(IP_ADDRESS, ": \t", socket.getfqdn(IP_ADDRESS))
+import time
+import iptype
 
 
 def getNetInterfaces():
@@ -17,7 +12,6 @@ def getNetInterfaces():
 	for i in range(1,len(netInt)-1):
 		netIntX = netInt[i].split()
 		netInterfaces.append(netIntX[0])
-
 	return netInterfaces
 
 def getIp(chosenInterface):
@@ -26,7 +20,40 @@ def getIp(chosenInterface):
 	command = str(command.stdout.read(), 'utf-8').split()
 	if((command[1])[:5] == "addr:"):
 		ip = (command[1])[5:]
-		print(ip)
+		ipInfo = iptype.getIpType(ip)
+		maxIp = ipInfo[2].split(".")
+
+		results = []
+		results.append(ip)
+		results.append(ipInfo[0])
+		results.append(ipInfo[2])
+
+
+		for i in range(int(maxIp[0]) + 1):
+			if(len(maxIp) >= 2):
+				for j in range(int(maxIp[1]) + 1):
+					if(len(maxIp) >= 3):
+						for k in range(int(maxIp[2]) + 1):
+							ip = (ipInfo[1] + "%d.%d.%d" % (i, j, k))
+							if ip != socket.getfqdn(ip):
+								results.append(ip + "#" + socket.getfqdn(ip))
+					else:
+						ip = (ipInfo[1] + "%d.%d" % (i, j))
+						if ip != socket.getfqdn(ip):
+							results.append(ip + "#" + socket.getfqdn(ip))
+			else:
+				ip = (ipInfo[1] + "%d" % (i))
+				if ip != socket.getfqdn(ip):
+					results.append(ip + "#" + socket.getfqdn(ip))
+		return results
+
+
+
+
+
+
+
+
 
 
 
@@ -41,8 +68,3 @@ def publicIpCheck(ipOrDomain):
 		print(domain)
 	else:
 		print(command)
-
-#RFC 1918
-#24-bit block  			10.0.0.0 - 10.255.255.255
-#20-bit block 			172.16.0.0 - 172.31.255.255
-#16-bit block			192.168.0.0 - 192.168.255.255
