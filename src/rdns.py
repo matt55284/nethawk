@@ -18,34 +18,43 @@ def getIp(chosenInterface):
 	command = "ifconfig " + chosenInterface + " | grep 'inet addr:'"
 	command = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 	command = str(command.stdout.read(), 'utf-8').split()
-	if((command[1])[:5] == "addr:"):
-		ip = (command[1])[5:]
-		ipInfo = iptype.getIpType(ip)
-		maxIp = ipInfo[2].split(".")
+	try:
+		if((command[1])[:5] == "addr:"):
+			ip = (command[1])[5:]
+			ipInfo = iptype.getIpType(ip)
+			if(ipInfo == 0):
+				error = 1
+				return error
 
-		results = []
-		results.append(ip)
-		results.append(ipInfo[0])
-		results.append(ipInfo[2])
+			maxIp = ipInfo[2].split(".")
+
+			results = []
+			results.append(ip)
+			results.append(ipInfo[0])
+			results.append(ipInfo[2])
 
 
-		for i in range(int(maxIp[0]) + 1):
-			if(len(maxIp) >= 2):
-				for j in range(int(maxIp[1]) + 1):
-					if(len(maxIp) >= 3):
-						for k in range(int(maxIp[2]) + 1):
-							ip = (ipInfo[1] + "%d.%d.%d" % (i, j, k))
+			for i in range(int(maxIp[0]) + 1):
+				if(len(maxIp) >= 2):
+					for j in range(int(maxIp[1]) + 1):
+						if(len(maxIp) >= 3):
+							for k in range(int(maxIp[2]) + 1):
+								ip = (ipInfo[1] + "%d.%d.%d" % (i, j, k))
+								if ip != socket.getfqdn(ip):
+									results.append(ip + "#" + socket.getfqdn(ip))
+						else:
+							ip = (ipInfo[1] + "%d.%d" % (i, j))
 							if ip != socket.getfqdn(ip):
 								results.append(ip + "#" + socket.getfqdn(ip))
-					else:
-						ip = (ipInfo[1] + "%d.%d" % (i, j))
-						if ip != socket.getfqdn(ip):
-							results.append(ip + "#" + socket.getfqdn(ip))
-			else:
-				ip = (ipInfo[1] + "%d" % (i))
-				if ip != socket.getfqdn(ip):
-					results.append(ip + "#" + socket.getfqdn(ip))
-		return results
+				else:
+					ip = (ipInfo[1] + "%d" % (i))
+					if ip != socket.getfqdn(ip):
+						results.append(ip + "#" + socket.getfqdn(ip))
+			return results
+
+	except IndexError:
+		error = 0
+		return error
 
 
 

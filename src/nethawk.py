@@ -65,7 +65,13 @@ def HAWK(options = []):
 #Reverse DNS Scanner(0-1) -------------------------------------------------------
 def rdnsMenu():
 	logo()
+
+	#offline mode. comment line below
 	netInterfaces = rdns.getNetInterfaces()
+
+	#netInterfaces[0+] is the list of interfaces
+	#netInterfaces = ["test1", "test2", "test3"]
+
 	options = ["exit", "help", "back"]
 	print(colours.GREEN + "[*] " + colours.ENDC + "Network Interfaces")
 	for i in range(len(netInterfaces)):
@@ -77,20 +83,30 @@ def rdnsMenu():
 	print(colours.GREEN + "\n[" + str(i+2) + "] " + colours.BLUE + "Previous Menu " + colours.DBLUE + "(or type 'back')\n\n" + colours.ENDC)
 	choice = HAWK(options)
 	if(str(0) <= choice <= str(i)):
+
+		#offline mode. comment line below
 		results = rdns.getIp(netInterfaces[int(choice)])
-			
+		if results == 0:
+			input(colours.RED + "[!] this network interface seems to be offline" + colours.ENDC)
+			rdnsMenu()
+		elif results == 1:
+			input(colours.RED + "[!] this ip address is not recognised" + colours.ENDC)
+			rdnsMenu()
+
+		#results = ["192.168.1.147", "rfc1919", "255", "192.168.1.1#swampdonkey", "192.168.1.10#testphone", "192.168.1.50#testlaptop"]
 		#results[0] is your device ip
 		#results[1] is the ip type
 		#results[2] is the max ip
 		#results[3] is the router ip
+		#results[4+] is the devices
 		#netInterfaces[int(choice)] is the net int
 
 
 		print("\n" + colours.GREEN + "[*] " + colours.ENDC + "Reverse DNS Scan Results")
 		print("\n" + colours.GREEN + "[*] " + colours.ENDC + "IP: " + results[0] + colours.DBLUE + " (" + netInterfaces[int(choice)] + ")" + colours.ENDC)
-		SSID = results[3].split("#")
-		print("\n" + colours.GREEN + "[*] " + colours.BLUE + "SSID: " + "'" + SSID[1] + "'" + colours.ENDC)
-		print(colours.GREEN + "[*] " + colours.BLUE + "DNS: " + SSID[0] +  colours.ENDC)
+#		SSID = results[3].split("#")
+#		print("\n" + colours.GREEN + "[*] " + colours.BLUE + "SSID: " + "'" + SSID[1] + "'" + colours.ENDC)
+#		print(colours.GREEN + "[*] " + colours.BLUE + "DNS: " + SSID[0] +  colours.ENDC)
 
 		for i in range (len(results)):
 			if(i > 2):
@@ -98,7 +114,7 @@ def rdnsMenu():
 				print("\n" + colours.GREEN + "[" + str(i-3) + "] " + colours.BLUE + device[1])
 				print(colours.GREEN + "[" + str(i-3) + "] " + colours.BLUE + device[0] + colours.ENDC)
 				
-		input(colours.HAWK + "\nHAWK" + colours.ENDC + "> ")
+		input(colours.HAWK + "HAWK" + colours.ENDC + "> ")
 		scannersMenu()
 
 
